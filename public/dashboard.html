@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/admin" class="nav-link">Admin Panel</a>
+      <a href="#" onclick="logout()" class="nav-link">Log Out</a>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="section-inner" style="max-width: 1200px;">
+      <div style="margin-bottom: 28px;">
+        <span class="label-badge" style="margin-bottom: 12px;">Management Console</span>
+        <h2 style="margin-top: 8px;">Workspace Dashboard</h2>
+        <p class="muted">Live operational directory for project infrastructure, commercial contracts, statutory compliance, and document files.</p>
+      </div>
+
+      <!-- Unified Master Card (Image 3 Reference Style) -->
+      <div class="master-card">
+        <!-- Integrated Card Topbar -->
+        <div class="card-topbar">
+          <div class="modern-tabs" id="tabs" role="tablist" aria-label="Dashboard sections">
+            <button type="button" class="modern-tab-btn active" role="tab" id="tabBtn-projects" data-tab="projects" aria-selected="true" aria-controls="projectsSection">
+              Projects <span class="badge" id="badge-projects">0</span>
+            </button>
+            <button type="button" class="modern-tab-btn" role="tab" id="tabBtn-contracts" data-tab="contracts" aria-selected="false" aria-controls="contractsSection">
+              Contracts <span class="badge" id="badge-contracts">0</span>
+            </button>
+            <button type="button" class="modern-tab-btn" role="tab" id="tabBtn-compliance" data-tab="compliance" aria-selected="false" aria-controls="complianceSection">
+              Technical Compliance <span class="badge" id="badge-compliance">25</span>
+            </button>
+            <button type="button" class="modern-tab-btn" role="tab" id="tabBtn-hrir" data-tab="hrir" aria-selected="false" aria-controls="hrirSection">
+              HR / IR Clearance <span class="badge" id="badge-hrir">8</span>
+            </button>
+            <button type="button" class="modern-tab-btn" role="tab" id="tabBtn-users" data-tab="users" aria-selected="false" aria-controls="usersSection">
+              Users <span class="badge" id="badge-users">0</span>
+            </button>
+            <button type="button" class="modern-tab-btn" role="tab" id="tabBtn-documents" data-tab="documents" aria-selected="false" aria-controls="documentsSection">
+              Documents <span class="badge" id="badge-documents">0</span>
+            </button>
+          </div>
+
+          <div class="card-controls">
+            <div class="filter-input-wrap">
+              <input type="text" id="tableFilter" placeholder="Filter..." oninput="filterCurrentTable()">
+            </div>
+            <a href="/add-project" id="primaryActionBtn" class="btn-primary" style="padding: 8px 18px; font-size: 13px; border-radius: var(--radius-sm); white-space: nowrap;">+ Add Project</a>
+          </div>
+        </div>
+
+        <!-- 01. Projects Tab Panel -->
+        <div id="projectsSection" class="tab-panel active" role="tabpanel" aria-labelledby="tabBtn-projects">
+          <div class="table-wrapper" style="border: none; border-radius: 0; box-shadow: none;">
+            <table class="modern-table" id="projectsTable">
+              <thead>
+                <tr>
+                  <th>Station & Tender No.</th>
+                  <th>Location</th>
+                  <th>Capacity & Tech</th>
+                  <th>Commercial / Tariff</th>
+                  <th>EPC Contractor</th>
+                  <th>COD (Commissioning)</th>
+                  <th>Cost & Grid Priority</th>
+                  <th style="text-align: right;">Specifications</th>
+                </tr>
+              </thead>
+              <tbody id="projectsBody">
+                <tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 40px;">Loading project records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 02. Contracts Tab Panel -->
+        <div id="contractsSection" class="tab-panel" role="tabpanel" aria-labelledby="tabBtn-contracts">
+          <div class="table-wrapper" style="border: none; border-radius: 0; box-shadow: none;">
+            <table class="modern-table" id="contractsTable">
+              <thead>
+                <tr>
+                  <th>Contract No & Title</th>
+                  <th>Classification</th>
+                  <th>Site In-Charge</th>
+                  <th>Bank Guarantee (BG)</th>
+                  <th>Validity Window</th>
+                  <th>Invoicing Freq</th>
+                  <th>Performance Targets</th>
+                  <th style="text-align: right;">Contract Terms</th>
+                </tr>
+              </thead>
+              <tbody id="contractsBody">
+                <tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 40px;">Loading contracts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 03. Technical Compliance Tab Panel -->
+        <div id="complianceSection" class="tab-panel" role="tabpanel" aria-labelledby="tabBtn-compliance">
+          <div style="padding: 18px 24px; background: #FAFAFC; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin: 0;">Contract Agreement (CA) Technical Matrix</p>
+              <p class="muted" style="font-size: 12px; margin: 0;">Statutory monthly reports, grid interruption logs, and maintenance certifications.</p>
+            </div>
+            <a href="/technical-compliance" class="btn-inspect" style="font-size: 12px; padding: 7px 14px;">Open Dedicated Matrix ↗</a>
+          </div>
+          <div class="table-wrapper" style="border: none; border-radius: 0; box-shadow: none;">
+            <table class="modern-table" id="dashComplianceTable">
+              <thead>
+                <tr>
+                  <th style="width: 60px;">S. No</th>
+                  <th>Document Schedule (as per CA)</th>
+                  <th style="width: 170px;">Mandatory Frequency</th>
+                  <th>Audit Context / Remarks</th>
+                  <th style="width: 240px;">Attachment & Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashComplianceBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 04. HR / IR Clearance Tab Panel -->
+        <div id="hrirSection" class="tab-panel" role="tabpanel" aria-labelledby="tabBtn-hrir">
+          <div style="padding: 18px 24px; background: #FAFAFC; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <p style="font-size: 13px; font-weight: 600; color: var(--text-main); margin: 0;">Statutory Workforce Clearances & Monthly Registrations</p>
+              <p class="muted" style="font-size: 12px; margin: 0;">CLRA labor licenses, factory certificates, and monthly muster wage audits.</p>
+            </div>
+            <a href="/hr-ir-clearance" class="btn-inspect" style="font-size: 12px; padding: 7px 14px;">Open Dedicated Clearance ↗</a>
+          </div>
+
+          <div style="padding: 16px 20px 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary);">
+            A. Rigid Statutory Certifications
+          </div>
+          <div class="table-wrapper" style="border: none; border-radius: 0; box-shadow: none; margin-bottom: 16px;">
+            <table class="modern-table" id="dashStatutoryTable">
+              <thead>
+                <tr>
+                  <th>Statutory Record</th>
+                  <th>Validity Window (Start / End)</th>
+                  <th>Compliance Status</th>
+                  <th>Checker Sign-Off</th>
+                  <th>Approver Sign-Off</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashStatutoryBody"></tbody>
+            </table>
+          </div>
+
+          <div style="padding: 16px 20px 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary); border-top: 1px solid var(--border);">
+            B. Monthly Recurring Labor Filings (Current Cycle)
+          </div>
+          <div class="table-wrapper" style="border: none; border-radius: 0; box-shadow: none;">
+            <table class="modern-table" id="dashMonthlyTable">
+              <thead>
+                <tr>
+                  <th>Form Identifier</th>
+                  <th>Compliance Type</th>
+                  <th>Upload Date</th>
+                  <th>Checker Approval</th>
+                  <th>Approver Approval</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashMonthlyBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 05. Users Tab Panel -->
+        <div id="usersSection" class="tab-panel" role="tabpanel" aria-labelledby="tabBtn-users">
+          <div class="table-wrapper" style="border: none; border-radius: 0; box-shadow: none;">
+            <table class="modern-table" id="usersTable">
+              <thead>
+                <tr>
+                  <th>User Identity</th>
+                  <th>Work Email</th>
+                  <th>System Access Role</th>
+                  <th>Account Status</th>
+                  <th>User UUID</th>
+                </tr>
+              </thead>
+              <tbody id="usersBody">
+                <tr><td colspan="5" style="text-align: center; color: var(--muted); padding: 40px;">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 06. Documents Tab Panel -->
+        <div id="documentsSection" class="tab-panel" role="tabpanel" aria-labelledby="tabBtn-documents">
+          <div class="table-wrapper" style="border: none; border-radius: 0; box-shadow: none;">
+            <table class="modern-table" id="documentsTable">
+              <thead>
+                <tr>
+                  <th>Document Title</th>
+                  <th>Category</th>
+                  <th>File Attachment</th>
+                  <th>Uploaded By</th>
+                  <th>Document UUID</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="documentsBody">
+                <tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 40px;">Loading documents...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Complete Full Specification Sheet Modal -->
+  <div class="modal-overlay" id="specModal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div>
+          <span class="label-badge" id="modalBadge" style="margin-bottom: 8px;">Specification Sheet</span>
+          <h3 id="modalTitle" style="margin: 6px 0 2px 0;">Record Detail</h3>
+          <p class="muted" id="modalSubtitle" style="font-size: 13px; margin: 0;">Comprehensive parameter telemetry</p>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalContent">
+        <!-- Injected dynamically with all fields -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let globalProjects = [];
+    let globalContracts = [];
+    let globalUsers = [];
+    let globalDocs = [];
+
+    const tabConfig = {
+      projects: { label: '+ Add Project', href: '/add-project' },
+      contracts: { label: '+ Add Contract', href: '/add-contract' },
+      compliance: { label: '+ Upload Compliance', href: '/technical-compliance' },
+      hrir: { label: '+ Add Clearance', href: '/hr-ir-clearance' },
+      users: { label: '+ Add User', href: '/admin' },
+      documents: { label: '+ Add Document', href: '/add-document' }
+    };
+
+    function switchTab(tabName) {
+      const targetPanel = document.getElementById(tabName + 'Section');
+      if (!targetPanel) return;
+
+      document.querySelectorAll('.modern-tab-btn').forEach(btn => {
+        const isSelected = btn.getAttribute('data-tab') === tabName;
+        btn.classList.toggle('active', isSelected);
+        btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+      });
+
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === (tabName + 'Section'));
+      });
+
+      const actionBtn = document.getElementById('primaryActionBtn');
+      if (actionBtn && tabConfig[tabName]) {
+        actionBtn.textContent = tabConfig[tabName].label;
+        actionBtn.setAttribute('href', tabConfig[tabName].href);
+      }
+
+      // Clear filter on tab change
+      const filterInput = document.getElementById('tableFilter');
+      if (filterInput) {
+        filterInput.value = '';
+        filterCurrentTable();
+      }
+
+      try {
+        localStorage.setItem('activeDashboardTab', tabName);
+        history.replaceState(null, '', '#' + tabName);
+      } catch (e) {}
+    }
+
+    // Attach click listeners to tab buttons
+    document.querySelectorAll('.modern-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab');
+        if (tab) switchTab(tab);
+      });
+    });
+
+    const validTabs = ['projects', 'contracts', 'compliance', 'hrir', 'users', 'documents'];
+    const currentHash = (window.location.hash || '').replace('#', '').toLowerCase();
+    const storedTab = localStorage.getItem('activeDashboardTab');
+    const initialTab = validTabs.includes(currentHash) ? currentHash : (validTabs.includes(storedTab) ? storedTab : 'projects');
+    switchTab(initialTab);
+
+    // Live table search/filter
+    function filterCurrentTable() {
+      const q = (document.getElementById('tableFilter').value || '').toLowerCase();
+      const activePanel = document.querySelector('.tab-panel.active');
+      if (!activePanel) return;
+      const rows = activePanel.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    // Modal Handlers
+    function closeModal() {
+      document.getElementById('specModal').classList.remove('active');
+    }
+
+    function closeModalOnBackdrop(e) {
+      if (e.target.id === 'specModal') {
+        closeModal();
+      }
+    }
+
+    // Open Project Modal with ALL 21 fields
+    function openProjectModal(index) {
+      const p = globalProjects[index];
+      if (!p) return;
+      document.getElementById('modalBadge').textContent = 'Infrastructure Specification';
+      document.getElementById('modalTitle').textContent = p.stationName || 'Project ' + p.tenderNo;
+      document.getElementById('modalSubtitle').textContent = 'Tender Ref: ' + p.tenderNo + ' | UUID: ' + (p.uuid || 'N/A');
+
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <div class="spec-section">
+          <div class="spec-title">01. Identification & Station Location</div>
+          <div class="spec-grid">
+            <div class="spec-item"><span class="spec-label">Tender Identification No</span><span class="spec-value" style="color: var(--primary); font-family: monospace;">${p.tenderNo}</span></div>
+            <div class="spec-item"><span class="spec-label">Station Name</span><span class="spec-value">${p.stationName}</span></div>
+            <div class="spec-item"><span class="spec-label">Project UUID (System ID)</span><span class="spec-value" style="font-family: monospace; font-size: 12px;">${p.uuid || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Station Geographic Location</span><span class="spec-value">${p.location || 'N/A'}</span></div>
+          </div>
+        </div>
+
+        <div class="spec-section">
+          <div class="spec-title">02. Capacity, Storage & Technical Parameters</div>
+          <div class="spec-grid">
+            <div class="spec-item"><span class="spec-label">Solar PV Capacity</span><span class="spec-value">${p.solarCapacityMW ? p.solarCapacityMW + ' MW' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">BESS Capacity (MW)</span><span class="spec-value">${p.bessCapacityMW ? p.bessCapacityMW + ' MW' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">BESS Energy (MWh)</span><span class="spec-value">${p.bessCapacityMWh ? p.bessCapacityMWh + ' MWh' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Project Classification</span><span class="spec-value"><span class="pill pill-blue">${p.projectType || 'Standard Solar'}</span></span></div>
+            <div class="spec-item"><span class="spec-label">Commercial Operation Date (COD)</span><span class="spec-value">${p.commissioningDate || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Open Access (OA) Date</span><span class="spec-value">${p.oaDate || 'N/A'}</span></div>
+          </div>
+        </div>
+
+        <div class="spec-section">
+          <div class="spec-title">03. Commercial Terms & Tariff Structure</div>
+          <div class="spec-grid">
+            <div class="spec-item"><span class="spec-label">PPA Tariff</span><span class="spec-value" style="color: #059669;">${p.ppaTariff ? '₹ ' + p.ppaTariff + ' / kWh' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Guaranteed Generation</span><span class="spec-value">${p.guaranteedMUs ? p.guaranteedMUs + ' MUs / Year' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Off-Taker Authority</span><span class="spec-value">${p.offTaker || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">PPA Tenure</span><span class="spec-value">${p.ppaTenure ? p.ppaTenure + ' Years' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Total Project Cost</span><span class="spec-value">${p.projectCost ? '₹ ' + p.projectCost + ' Cr' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Must Run Grid Priority</span><span class="spec-value"><span class="pill ${p.mustRun ? 'pill-green' : 'pill-gray'}">${p.mustRun ? 'Active (Must Run Priority)' : 'Standard Grid'}</span></span></div>
+          </div>
+        </div>
+
+        <div class="spec-section">
+          <div class="spec-title">04. Engineering, Guarantees & Degradation</div>
+          <div class="spec-grid">
+            <div class="spec-item"><span class="spec-label">EPC Project Contractor</span><span class="spec-value">${p.projectContractor || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Performance Metric</span><span class="spec-value">${p.performanceMetric || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Guaranteed Parameter</span><span class="spec-value">${p.guaranteedParameter || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Annual Degradation Factor</span><span class="spec-value">${p.degradationFactor ? p.degradationFactor + ' %' : 'N/A'}</span></div>
+            <div class="spec-item" style="grid-column: 1 / -1;"><span class="spec-label">DSM Applications & Compliance</span><span class="spec-value" style="font-weight: 500; font-size: 13px;">${p.dsmApplications || 'Standard DSM regulatory compliance applicable.'}</span></div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('specModal').classList.add('active');
+    }
+
+    // Open Contract Modal with ALL 14 fields
+    function openContractModal(index) {
+      const c = globalContracts[index];
+      if (!c) return;
+      document.getElementById('modalBadge').textContent = 'Commercial Master Contract';
+      document.getElementById('modalTitle').textContent = c.contractName;
+      document.getElementById('modalSubtitle').textContent = 'Contract No: ' + (c.contractNo || 'N/A') + ' | PO Ref: ' + (c.poNo || 'N/A');
+
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <div class="spec-section">
+          <div class="spec-title">01. Contract Identification & Classification</div>
+          <div class="spec-grid">
+            <div class="spec-item"><span class="spec-label">Contract Number</span><span class="spec-value" style="color: var(--primary); font-family: monospace;">${c.contractNo || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Purchase Order (PO) Number</span><span class="spec-value" style="font-family: monospace;">${c.poNo || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Master Contract Name</span><span class="spec-value">${c.contractName}</span></div>
+            <div class="spec-item"><span class="spec-label">Classification / Category</span><span class="spec-value"><span class="pill pill-purple">${c.contractType || 'General'}</span></span></div>
+            <div class="spec-item"><span class="spec-label">Contract UUID (Audit Key)</span><span class="spec-value" style="font-family: monospace; font-size: 12px;">${c.uuid || 'N/A'}</span></div>
+          </div>
+        </div>
+
+        <div class="spec-section">
+          <div class="spec-title">02. Site Oversight & Guarantees</div>
+          <div class="spec-grid">
+            <div class="spec-item"><span class="spec-label">Site-In-Charge Officer</span><span class="spec-value">${c.siteInCharge || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Bank Guarantee (BG) Value</span><span class="spec-value" style="color: #059669;">${c.bgValue ? '₹ ' + c.bgValue + ' Cr' : 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">BG Validity Window</span><span class="spec-value">${c.validity || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">SLA / Performance Targets</span><span class="spec-value">${c.performanceMetric || 'N/A'}</span></div>
+          </div>
+        </div>
+
+        <div class="spec-section">
+          <div class="spec-title">03. Commercial Timeline, Billing & Scope</div>
+          <div class="spec-grid">
+            <div class="spec-item"><span class="spec-label">Effective Start Date</span><span class="spec-value">${c.effectiveDate || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Contract End Date</span><span class="spec-value">${c.endDate || 'N/A'}</span></div>
+            <div class="spec-item"><span class="spec-label">Invoicing Frequency</span><span class="spec-value"><span class="pill pill-blue">${c.invoicingFrequency || 'Monthly'}</span></span></div>
+            <div class="spec-item"><span class="spec-label">Contract Value (Year-Wise Schedule)</span><span class="spec-value" style="font-size: 13px;">${c.contractValueYearWise || 'N/A'}</span></div>
+            <div class="spec-item" style="grid-column: 1 / -1;"><span class="spec-label">Scope of Work Summary</span><span class="spec-value" style="font-weight: 500; font-size: 13px;">${c.scopeSummary || 'Standard contract scope of work applicable.'}</span></div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('specModal').classList.add('active');
+    }
+
+    // Technical Compliance Dataset
+    const complianceDocs = [
+      { name: 'Preventive Maintenance Schedules (Actuals)', freq: 'yes' },
+      { name: 'Preventive Maintenance Schedule for the ensuing month', freq: 'yes' },
+      { name: 'Grid Interruptions Report', freq: 'yes' },
+      { name: 'Duly certified load curtailment details', freq: 'yes' },
+      { name: 'Vegetation Cleaning Report', freq: 'yes' },
+      { name: 'Breakdown / Troubleshoot / Downtime Report', freq: 'yes' },
+      { name: 'Failure Analysis / history / troubleshooting details', freq: 'yes' },
+      { name: 'RCA details', freq: 'yes' },
+      { name: 'Spares Consumption and Inventory Report', freq: 'yes' },
+      { name: 'PV Modules Cleaning Schedules', freq: 'yes' },
+      { name: 'PV Module thermal imaging Report', freq: 'no' },
+      { name: 'DSM (Deviation Settlement Mechanism) report', freq: 'no' },
+      { name: 'DSM reconciliation statement', freq: 'no' },
+      { name: 'Generation Data', freq: 'yes' },
+      { name: 'Work orders from the sub vendors', freq: 'no' },
+      { name: 'NOC from the Sub-vendors', freq: 'no' },
+      { name: 'HOTO documentation', freq: 'only_1_time' },
+      { name: 'Comprehensive Monthly O&M Reports', freq: 'yes' },
+      { name: 'Monthly Safety Status Report', freq: 'yes' },
+      { name: 'Security Report', freq: 'yes' },
+      { name: 'Earth Resistivity Records', freq: 'yes' },
+      { name: "Organogram of the contractor's employees on station and the hierarchy of it", freq: 'yes' },
+      { name: "Details and documents of the contractor's representative and is of site incharge", freq: 'yes' },
+      { name: 'Report on the Status of the works which are required to be done on priority after the effective date of the contract', freq: 'yes' },
+      { name: 'Calibration report of the required equipment, tools, meters as described in CA', freq: 'yes' }
+    ];
+
+    function renderComplianceTable() {
+      const tbody = document.getElementById('dashComplianceBody');
+      if (!tbody) return;
+      tbody.innerHTML = complianceDocs.map((d, i) => {
+        const pillClass = d.freq === 'yes' ? 'pill-green' : d.freq === 'no' ? 'pill-gray' : 'pill-amber';
+        const label = d.freq === 'yes' ? 'MONTHLY' : d.freq === 'no' ? 'AS NEEDED' : 'ONE-TIME';
+        return `<tr>
+          <td style="font-weight: 600; color: var(--muted);">${i + 1}</td>
+          <td style="font-weight: 600; color: var(--text-main);">${d.name}</td>
+          <td><span class="pill ${pillClass}">${label}</span></td>
+          <td><input type="text" id="comp-remark-${i}" placeholder="Enter audit verification remarks..." style="width: 100%; padding: 6px 12px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #FAFAFC;"></td>
+          <td>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="file" id="comp-file-${i}" style="font-size: 11px; max-width: 140px;">
+              <button type="button" onclick="uploadComplianceDoc(${i}, '${d.name.replace(/'/g, "\\'")}')" class="btn-primary" style="padding: 5px 12px; font-size: 11px;">Upload</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+      document.getElementById('badge-compliance').textContent = complianceDocs.length;
+    }
+
+    async function uploadComplianceDoc(idx, title) {
+      const token = localStorage.getItem('token');
+      const fileInput = document.getElementById('comp-file-' + idx);
+      const remarkInput = document.getElementById('comp-remark-' + idx);
+      if (!fileInput || !fileInput.files[0]) {
+        alert('Please select a file to upload for ' + title);
+        return;
+      }
+      const formData = new FormData();
+      formData.append('uuid', crypto.randomUUID());
+      formData.append('docType', 'Technical');
+      formData.append('title', title);
+      formData.append('file', fileInput.files[0]);
+      formData.append('remark', remarkInput ? remarkInput.value.trim() : '');
+
+      try {
+        const res = await fetch('/api/admin/documents', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token },
+          body: formData
+        });
+        const result = await res.json();
+        if (res.ok) {
+          alert('Document successfully uploaded! UUID: ' + result.uuid);
+          fileInput.value = '';
+          if (remarkInput) remarkInput.value = '';
+          loadData();
+        } else {
+          alert('Upload failed: ' + (result.error || 'Server error'));
+        }
+      } catch (err) {
+        alert('Network communication error during upload');
+      }
+    }
+
+    // HR / IR Clearance Datasets
+    const statutoryList = [
+      { name: 'Factory License', validity: '01 Jan 2026 – 31 Dec 2026', status: 'Compliant', checker: '10 Jan 2026', approver: '12 Jan 2026' },
+      { name: 'MIN WAGE Compliance Certificate', validity: '01 Apr 2026 – 31 Mar 2027', status: 'Compliant', checker: '05 Apr 2026', approver: '08 Apr 2026' },
+      { name: 'Labor License (CLRA Act)', validity: '15 Feb 2026 – 14 Feb 2027', status: 'Pending Review', checker: 'Pending', approver: 'Pending' }
+    ];
+
+    const monthlyList = [
+      { form: 'Form A', type: 'Employee Register', date: '2026-10-05', checker: 'Approved (10 Oct)', approver: 'Approved (12 Oct)', status: 'Active' },
+      { form: 'Attendance', type: 'Muster Roll Register', date: '2026-10-05', checker: 'Approved (10 Oct)', approver: 'Approved (12 Oct)', status: 'Active' },
+      { form: 'Form B', type: 'Wages Register & Proof', date: '2026-10-07', checker: 'Approved (11 Oct)', approver: 'Approved (13 Oct)', status: 'Active' },
+      { form: 'Form C', type: 'Register of Deductions / Fines', date: '2026-10-07', checker: 'Approved (11 Oct)', approver: 'Pending', status: 'In Review' },
+      { form: 'Form D', type: 'Overtime Register', date: '2026-10-07', checker: 'Approved (11 Oct)', approver: 'Pending', status: 'In Review' }
+    ];
+
+    function renderHRIRTables() {
+      const sBody = document.getElementById('dashStatutoryBody');
+      if (sBody) {
+        sBody.innerHTML = statutoryList.map(item => {
+          const isComp = item.status === 'Compliant';
+          return `<tr>
+            <td style="font-weight: 600; color: var(--text-main); font-size: 13px;">${item.name}</td>
+            <td style="color: var(--text-secondary); font-size: 13px;">${item.validity}</td>
+            <td><span class="pill ${isComp ? 'pill-green' : 'pill-amber'}">${item.status}</span></td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${item.checker}</td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${item.approver}</td>
+            <td><a href="/hr-ir-clearance" class="btn-inspect">Update ↗</a></td>
+          </tr>`;
+        }).join('');
+      }
+
+      const mBody = document.getElementById('dashMonthlyBody');
+      if (mBody) {
+        mBody.innerHTML = monthlyList.map(item => `<tr>
+          <td style="font-weight: 700; color: var(--primary); font-size: 13px;">${item.form}</td>
+          <td style="font-weight: 500; color: var(--text-main); font-size: 13px;">${item.type}</td>
+          <td style="color: var(--text-secondary); font-size: 12px;">${item.date}</td>
+          <td style="font-size: 12px; color: var(--text-secondary);">${item.checker}</td>
+          <td style="font-size: 12px; color: var(--text-secondary);">${item.approver}</td>
+          <td><span class="pill ${item.status === 'Active' ? 'pill-green' : 'pill-amber'}">${item.status}</span></td>
+          <td><a href="/hr-ir-clearance" class="btn-inspect">Inspect ↗</a></td>
+        </tr>`).join('');
+      }
+
+      document.getElementById('badge-hrir').textContent = statutoryList.length + monthlyList.length;
+    }
+
+    async function loadData() {
+      const token = localStorage.getItem('token');
+      if (!token) { window.location.href = '/login'; return; }
+      renderComplianceTable();
+      renderHRIRTables();
+      try {
+        // 1. Projects
+        const projRes = await fetch('/api/admin/projects', { headers: { Authorization: 'Bearer ' + token } });
+        const projects = await projRes.json();
+        globalProjects = Array.isArray(projects) ? projects : [];
+        const projectsBody = document.getElementById('projectsBody');
+        if (globalProjects.length > 0) {
+          projectsBody.innerHTML = globalProjects.map((p, i) => `<tr>
+            <td>
+              <div style="font-weight: 700; color: var(--text-main); font-size: 14px;">${p.stationName}</div>
+              <div style="font-size: 12px; color: var(--primary); font-family: monospace; font-weight: 600; margin-top: 2px;">${p.tenderNo}</div>
+              <div style="font-size: 11px; color: var(--muted); font-family: monospace;">UUID: ${p.uuid ? p.uuid.slice(0, 8) + '...' : '-'}</div>
+            </td>
+            <td style="color: var(--text-secondary); font-weight: 500;">${p.location || '-'}</td>
+            <td>
+              <div style="font-weight: 600; color: var(--text-main);">${p.solarCapacityMW ? p.solarCapacityMW + ' MW' : '-'}</div>
+              ${p.bessCapacityMW ? `<div style="margin-top: 4px;"><span class="pill pill-blue">BESS: ${p.bessCapacityMW}MW / ${p.bessCapacityMWh || 0}MWh</span></div>` : ''}
+              <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${p.projectType || 'Standard'}</div>
+            </td>
+            <td>
+              <div style="font-weight: 700; color: #059669;">${p.ppaTariff ? '₹ ' + p.ppaTariff + ' / kWh' : '-'}</div>
+              <div style="font-size: 12px; color: var(--text-secondary);">${p.offTaker || '-'}</div>
+              ${p.ppaTenure ? `<div style="font-size: 11px; color: var(--muted);">${p.ppaTenure} Years Tenure</div>` : ''}
+            </td>
+            <td style="font-weight: 500; color: var(--text-main); font-size: 13px;">${p.projectContractor || '-'}</td>
+            <td>
+              <div style="font-weight: 600; color: var(--text-main);">${p.commissioningDate || '-'}</div>
+              ${p.oaDate ? `<div style="font-size: 11px; color: var(--muted);">OA: ${p.oaDate}</div>` : ''}
+            </td>
+            <td>
+              <div style="font-weight: 700; color: var(--text-main);">${p.projectCost ? '₹ ' + p.projectCost + ' Cr' : '-'}</div>
+              <div style="margin-top: 4px;"><span class="pill ${p.mustRun ? 'pill-green' : 'pill-gray'}">${p.mustRun ? 'Must Run' : 'Standard'}</span></div>
+            </td>
+            <td style="text-align: right;">
+              <button type="button" onclick="openProjectModal(${i})" class="btn-inspect">View Full Specs ↗</button>
+            </td>
+          </tr>`).join('');
+          document.getElementById('badge-projects').textContent = globalProjects.length;
+        } else {
+          projectsBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 40px;">No projects registered yet. Click "+ Add Project" above.</td></tr>';
+          document.getElementById('badge-projects').textContent = '0';
+        }
+
+        // 2. Contracts
+        const contRes = await fetch('/api/admin/contracts', { headers: { Authorization: 'Bearer ' + token } });
+        const contracts = await contRes.json();
+        globalContracts = Array.isArray(contracts) ? contracts : [];
+        const contractsBody = document.getElementById('contractsBody');
+        if (globalContracts.length > 0) {
+          contractsBody.innerHTML = globalContracts.map((c, i) => `<tr>
+            <td>
+              <div style="font-weight: 700; color: var(--text-main); font-size: 14px;">${c.contractName}</div>
+              <div style="font-size: 12px; color: var(--primary); font-family: monospace; font-weight: 600; margin-top: 2px;">${c.contractNo || '-'}</div>
+              ${c.poNo ? `<div style="font-size: 11px; color: var(--muted); font-family: monospace;">PO: ${c.poNo}</div>` : ''}
+            </td>
+            <td><span class="pill pill-purple">${c.contractType || 'Standard'}</span></td>
+            <td style="font-weight: 500; color: var(--text-main);">${c.siteInCharge || '-'}</td>
+            <td>
+              <div style="font-weight: 700; color: #059669;">${c.bgValue ? '₹ ' + c.bgValue + ' Cr' : '-'}</div>
+              <div style="font-size: 11px; color: var(--muted);">${c.validity || '-'}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: var(--text-main); font-size: 12px;">${c.effectiveDate || '-'}</div>
+              <div style="font-size: 11px; color: var(--muted);">to ${c.endDate || '-'}</div>
+            </td>
+            <td><span class="pill pill-blue">${c.invoicingFrequency || 'Monthly'}</span></td>
+            <td style="font-size: 12px; color: var(--text-secondary); max-width: 180px;">${c.performanceMetric || '-'}</td>
+            <td style="text-align: right;">
+              <button type="button" onclick="openContractModal(${i})" class="btn-inspect">View Full Terms ↗</button>
+            </td>
+          </tr>`).join('');
+          document.getElementById('badge-contracts').textContent = globalContracts.length;
+        } else {
+          contractsBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 40px;">No contracts registered yet. Click "+ Add Contract" above.</td></tr>';
+          document.getElementById('badge-contracts').textContent = '0';
+        }
+
+        // 3. Users
+        const usersRes = await fetch('/api/admin/users', { headers: { Authorization: 'Bearer ' + token } });
+        const users = await usersRes.json();
+        globalUsers = Array.isArray(users) ? users : [];
+        const usersBody = document.getElementById('usersBody');
+        if (globalUsers.length > 0) {
+          usersBody.innerHTML = globalUsers.map(u => `<tr>
+            <td style="font-weight: 600; color: var(--text-main); font-size: 14px;">${u.name || u.username || '-'}</td>
+            <td style="color: var(--text-secondary);">${u.email}</td>
+            <td><span class="pill pill-blue" style="text-transform: uppercase;">${u.role}</span></td>
+            <td><span class="pill ${u.isActive ? 'pill-green' : 'pill-amber'}">${u.isActive ? 'Active' : 'Inactive'}</span></td>
+            <td style="font-family: monospace; font-size: 12px; color: var(--muted);">${u.uuid || '-'}</td>
+          </tr>`).join('');
+          document.getElementById('badge-users').textContent = globalUsers.length;
+        } else {
+          usersBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--muted); padding: 40px;">No users found in directory.</td></tr>';
+          document.getElementById('badge-users').textContent = '0';
+        }
+
+        // 4. Documents
+        const docRes = await fetch('/api/admin/documents', { headers: { Authorization: 'Bearer ' + token } });
+        const docs = await docRes.json();
+        globalDocs = Array.isArray(docs) ? docs : [];
+        const documentsBody = document.getElementById('documentsBody');
+        if (globalDocs.length > 0) {
+          documentsBody.innerHTML = globalDocs.map(d => `<tr>
+            <td>
+              <div style="font-weight: 600; color: var(--text-main); font-size: 14px;">${d.title}</div>
+              ${d.remark ? `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">${d.remark}</div>` : ''}
+            </td>
+            <td><span class="pill pill-blue">${d.docType}</span></td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${d.originalFilename || '-'}</td>
+            <td style="font-size: 13px; color: var(--text-main);">${d.uploadedBy || 'System'}</td>
+            <td style="font-family: monospace; font-size: 12px; color: var(--muted);">${d.uuid || '-'}</td>
+            <td style="text-align: right;">
+              <button onclick="deleteDoc(${d.id})" class="btn-inspect" style="color: #DC2626; border-color: rgba(220, 38, 38, 0.2);">Delete</button>
+            </td>
+          </tr>`).join('');
+          document.getElementById('badge-documents').textContent = globalDocs.length;
+        } else {
+          documentsBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 40px;">No documents uploaded yet. Click "+ Add Document" above.</td></tr>';
+          document.getElementById('badge-documents').textContent = '0';
+        }
+      } catch (e) {
+        console.error('Error loading dashboard data:', e);
+      }
+    }
+
+    async function deleteDoc(id) {
+      if (!confirm('Are you sure you want to delete this document?')) return;
+      const token = localStorage.getItem('token');
+      await fetch('/api/admin/documents/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } });
+      loadData();
+    }
+
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login'; }
+    loadData();
+  </script>
+</body>
+</html>

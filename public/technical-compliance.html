@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical Compliance — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/dashboard#compliance" class="nav-link">Dashboard</a>
+      <a href="#" onclick="logout()" class="nav-link">Log Out</a>
+    </div>
+  </nav>
+
+  <section class="section" style="min-height: 90vh;">
+    <div class="section-inner" style="max-width: 1100px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <span class="label-badge" style="margin-bottom: 12px;">Audit Matrix</span>
+          <h2 style="margin-top: 8px;">Technical Compliance Schedule</h2>
+          <p class="muted">Statutory documents and periodic submissions as defined in Contract Agreement (CA). Upload monthly if marked Yes.</p>
+        </div>
+        <a href="/dashboard#compliance" class="btn-secondary">← Back to Dashboard</a>
+      </div>
+
+      <div class="card" style="margin-bottom: 32px;">
+        <div class="table-wrapper">
+          <table id="complianceTable">
+            <thead>
+              <tr>
+                <th style="width: 60px;">S. No</th>
+                <th>Document Name (as per CA)</th>
+                <th style="width: 170px;">Requirement Frequency</th>
+                <th>Audit Context / Remarks</th>
+                <th style="width: 260px;">Upload Action</th>
+              </tr>
+            </thead>
+            <tbody id="complianceBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const docs = [
+      { name: 'Preventive Maintenance Schedules (Actuals)', freq: 'yes' },
+      { name: 'Preventive Maintenance Schedule for the ensuing month', freq: 'yes' },
+      { name: 'Grid Interruptions Report', freq: 'yes' },
+      { name: 'Duly certified load curtailment details', freq: 'yes' },
+      { name: 'Vegetation Cleaning Report', freq: 'yes' },
+      { name: 'Breakdown / Troubleshoot / Downtime Report', freq: 'yes' },
+      { name: 'Failure Analysis / history / troubleshooting details', freq: 'yes' },
+      { name: 'RCA details', freq: 'yes' },
+      { name: 'Spares Consumption and Inventory Report', freq: 'yes' },
+      { name: 'PV Modules Cleaning Schedules', freq: 'yes' },
+      { name: 'PV Module thermal imaging Report', freq: 'no' },
+      { name: 'DSM (Deviation Settlement Mechanism) report', freq: 'no' },
+      { name: 'DSM reconciliation statement', freq: 'no' },
+      { name: 'Generation Data', freq: 'yes' },
+      { name: 'Work orders from the sub vendors', freq: 'no' },
+      { name: 'NOC from the Sub-vendors', freq: 'no' },
+      { name: 'HOTO documentation', freq: 'only_1_time' },
+      { name: 'Comprehensive Monthly O&M Reports', freq: 'yes' },
+      { name: 'Monthly Safety Status Report', freq: 'yes' },
+      { name: 'Security Report', freq: 'yes' },
+      { name: 'Earth Resistivity Records', freq: 'yes' },
+      { name: "Organogram of the contractor's employees on station and the hierarchy of it", freq: 'yes' },
+      { name: "Details and documents of the contractor's representative and is of site incharge", freq: 'yes' },
+      { name: 'Report on the Status of the works which are required to be done on priority after the effective date of the contract', freq: 'yes' },
+      { name: 'Calibration report of the required equipment, tools, meters as described in CA', freq: 'yes' }
+    ];
+
+    function renderTable() {
+      const tbody = document.getElementById('complianceBody');
+      tbody.innerHTML = docs.map((d, i) => {
+        const badgeColor = d.freq === 'yes' ? 'background: #DCFCE7; color: #15803D;' : d.freq === 'no' ? 'background: #FEE2E2; color: #DC2626;' : 'background: #FEF3C7; color: #D97706;';
+        const label = d.freq === 'yes' ? 'MONTHLY (YES)' : d.freq === 'no' ? 'AS NEEDED (NO)' : 'ONE-TIME ONLY';
+        return `<tr>
+          <td style="font-weight: 600; color: var(--muted);">${i + 1}</td>
+          <td style="font-weight: 600; color: var(--text-main); font-size: 13px;">${d.name}</td>
+          <td><span style="display: inline-block; padding: 4px 10px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700; ${badgeColor}">${label}</span></td>
+          <td><input type="text" placeholder="Enter audit verification remarks..." style="width: 100%; padding: 7px 12px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+          <td>
+            <form onsubmit="uploadDoc(event, '${d.name.replace(/'/g, "\\'")}', '${d.freq}', this)" style="display: flex; gap: 8px; align-items: center;">
+              <input type="file" accept=".pdf,.xlsx,.xls,.doc,.docx" style="font-size: 11px; max-width: 160px;" required>
+              <button type="submit" class="btn-primary" style="padding: 6px 12px; font-size: 11px;">Upload</button>
+            </form>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function uploadDoc(e, docName, freq, form) {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      const fileInput = form.querySelector('input[type="file"]');
+      const remarkInput = form.closest('tr').querySelector('input[type="text"]');
+      const formData = new FormData();
+      formData.append('uuid', crypto.randomUUID());
+      formData.append('docType', 'Technical');
+      formData.append('title', docName);
+      formData.append('file', fileInput.files[0]);
+      formData.append('remark', remarkInput ? remarkInput.value.trim() : '');
+      try {
+        const res = await fetch('/api/admin/documents', { method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: formData });
+        const result = await res.json();
+        if (res.ok) {
+          alert('Document uploaded successfully! Assigned UUID: ' + result.uuid);
+          fileInput.value = '';
+          if (remarkInput) remarkInput.value = '';
+        } else {
+          alert('Error: ' + (result.error || 'Upload failed'));
+        }
+      } catch (err) { alert('Network communication error during upload'); }
+    }
+
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login'; }
+    renderTable();
+  </script>
+</body>
+</html>

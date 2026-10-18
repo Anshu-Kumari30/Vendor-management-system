@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR / IR Clearance — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/dashboard#hrir" class="nav-link">Dashboard</a>
+      <a href="#" onclick="logout()" class="nav-link">Log Out</a>
+    </div>
+  </nav>
+
+  <section class="section" style="min-height: 90vh;">
+    <div class="section-inner" style="max-width: 1100px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <span class="label-badge" style="margin-bottom: 12px;">Workforce Compliance</span>
+          <h2 style="margin-top: 8px;">HR / IR Clearance Ledger</h2>
+          <p class="muted">Statutory rigid certifications and monthly recurring labor clearances for project sites.</p>
+        </div>
+        <a href="/dashboard#hrir" class="btn-secondary">← Back to Dashboard</a>
+      </div>
+
+      <!-- Statutory Compliances -->
+      <div class="card" style="margin-bottom: 32px;">
+        <div class="tab-header">
+          <div>
+            <h3>Statutory Compliances (Rigid Period Validity)</h3>
+            <p class="muted" style="font-size: 13px;">Licenses with definitive effective start and expiry intervals requiring dual audit approval.</p>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="statutoryTable">
+            <thead>
+              <tr>
+                <th>Document Name</th>
+                <th>Validity (Start / End Date)</th>
+                <th>Compliance Status</th>
+                <th>Checker Approved</th>
+                <th>Approver Approved</th>
+                <th>Remarks</th>
+                <th>Upload</th>
+              </tr>
+            </thead>
+            <tbody id="statutoryBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Monthly Recurring Compliances -->
+      <div class="card" style="margin-bottom: 32px;">
+        <div class="tab-header">
+          <div>
+            <h3>Monthly Cyclical Compliances (Current Billing Cycle)</h3>
+            <p class="muted" style="font-size: 13px;">Recurring payroll, attendance muster, and wage distribution proof required every billing cycle.</p>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="monthlyTable">
+            <thead>
+              <tr>
+                <th>Form Identifier</th>
+                <th>Attachment & Date</th>
+                <th>Checker Verification</th>
+                <th>Approver Verification</th>
+                <th>Status</th>
+                <th>Checker Remarks</th>
+                <th>Approver Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const statutory = [
+      { name: 'Factory License', start: '2026-01-01', end: '2026-12-31', status: 'Compliant' },
+      { name: 'MIN WAGE Compliance Certificate', start: '2026-04-01', end: '2027-03-31', status: 'Compliant' },
+      { name: 'Labor License (CLRA Act)', start: '2026-02-15', end: '2027-02-14', status: 'Pending Review' }
+    ];
+
+    const monthly = [
+      { form: 'Form A — Employee Register' },
+      { form: 'Attendance — Muster Roll Register' },
+      { form: 'Form B — Wages Register & Bank Proof' },
+      { form: 'Form C — Register of Deductions / Fines' },
+      { form: 'Form D — Overtime Register' }
+    ];
+
+    const sBody = document.getElementById('statutoryBody');
+    statutory.forEach((item, i) => {
+      sBody.innerHTML += `<tr>
+        <td style="font-weight: 600; color: var(--text-main); font-size: 13px;">${item.name}</td>
+        <td>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <input type="date" value="${item.start}" style="padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);">
+            <span style="color: var(--muted);">/</span>
+            <input type="date" value="${item.end}" style="padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);">
+          </div>
+        </td>
+        <td><input type="text" value="${item.status}" placeholder="Status" style="width: 100px; padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+        <td><input type="date" value="2026-01-10" style="padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+        <td><input type="date" value="2026-01-12" style="padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+        <td><input type="text" placeholder="Audit remarks..." style="width: 130px; padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+        <td><button type="button" onclick="uploadDoc('statutory', ${i})" class="btn-primary" style="padding: 6px 12px; font-size: 11px;">Upload</button></td>
+      </tr>`;
+    });
+
+    const mBody = document.getElementById('monthlyBody');
+    monthly.forEach((item, i) => {
+      mBody.innerHTML += `<tr>
+        <td style="font-weight: 600; color: var(--primary); font-size: 13px;">${item.form}</td>
+        <td>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <input type="file" style="font-size: 11px; max-width: 160px;">
+            <input type="date" value="2026-10-05" style="padding: 3px 6px; font-size: 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);">
+          </div>
+        </td>
+        <td><input type="date" value="2026-10-10" style="padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+        <td><input type="date" value="2026-10-12" style="padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+        <td><span style="display: inline-block; padding: 4px 10px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700; background: #DCFCE7; color: #15803D;">Active</span></td>
+        <td><input type="text" placeholder="Checker notes..." style="width: 120px; padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+        <td><input type="text" placeholder="Approver notes..." style="width: 120px; padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-main);"></td>
+      </tr>`;
+    });
+
+    async function uploadDoc(type, idx) {
+      alert('Certification document uploaded successfully for ' + statutory[idx].name + '!');
+    }
+
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login'; }
+  </script>
+</body>
+</html>

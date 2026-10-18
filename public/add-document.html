@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Document — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="#" onclick="logout()" class="nav-link">Log Out</a>
+    </div>
+  </nav>
+
+  <section class="section" style="min-height: 90vh;">
+    <div class="section-inner" style="max-width: 800px;">
+      <div style="margin-bottom: 32px;">
+        <span class="label-badge" style="margin-bottom: 12px;">Document Vault</span>
+        <h2 style="margin-top: 8px;">Upload Document Asset</h2>
+        <p class="muted">Select document classification, attach file payload, assign document UUID, and document audit remarks.</p>
+      </div>
+
+      <form id="docForm" onsubmit="uploadDocument(event)" style="display: grid; gap: 24px;" enctype="multipart/form-data">
+        <!-- Document Metadata -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">01. Document Classification</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label for="uuid" style="margin-bottom: 0;">Document UUID</label>
+                <button type="button" onclick="generateUUID('uuid')" style="background: none; border: none; color: var(--primary); font-size: 12px; font-weight: 600; cursor: pointer;">↻ New UUID</button>
+              </div>
+              <input type="text" id="uuid" name="uuid" placeholder="e.g. 3f28c3e1-6d6a-4b0a-9ce6-1c204c81f5d3" style="font-family: monospace;" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="docType">Document Category</label>
+              <select id="docType" name="docType" required>
+                <option value="">Select Document Category</option>
+                <option value="Tender">Tender Specification</option>
+                <option value="Contract">Contract Agreement</option>
+                <option value="Invoice">Verified Invoice</option>
+                <option value="Meeting Minutes">Meeting Minutes (MoM)</option>
+                <option value="HR / IR">HR / IR Clearance</option>
+                <option value="Technical">Technical Report</option>
+                <option value="PBG / Insurance">PBG & Insurance Certificate</option>
+                <option value="Correspondence">Official Correspondence</option>
+                <option value="Project Report">Project Progress Report</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 0;">
+              <label for="docTitle">Document Title</label>
+              <input type="text" id="docTitle" name="title" placeholder="e.g. Q3 Technical Compliance Audit" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Payload & Notes -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">02. File Payload & Audit Notes</p>
+          <div style="display: grid; gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="docFile">Attach File (.pdf, .xlsx, .xls, .doc, .docx)</label>
+              <input type="file" id="docFile" name="file" accept=".pdf,.xlsx,.xls,.doc,.docx" required style="padding: 10px 14px; cursor: pointer;">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="docRemark">Audit Context & Remarks</label>
+              <textarea id="docRemark" name="remark" placeholder="Provide any verification references, signatories, or version notes..." style="min-height: 95px;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; justify-content: flex-end; padding-top: 12px;">
+          <a href="/dashboard#documents" class="btn-secondary">Back to Dashboard</a>
+          <button type="submit" class="btn-primary">Upload Document ↗</button>
+        </div>
+      </form>
+      <p id="docMsg" style="margin-top: 24px; font-size: 14px; text-align: center;"></p>
+    </div>
+  </section>
+
+  <script>
+    function generateUUID(id) {
+      document.getElementById(id).value = crypto.randomUUID();
+    }
+
+    // Auto-populate Document UUID on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!document.getElementById('uuid').value) {
+        generateUUID('uuid');
+      }
+    });
+
+    async function uploadDocument(e) {
+      e.preventDefault();
+      const msg = document.getElementById('docMsg');
+      msg.textContent = '';
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('uuid', document.getElementById('uuid').value.trim());
+      formData.append('docType', document.getElementById('docType').value);
+      formData.append('title', document.getElementById('docTitle').value.trim());
+      formData.append('file', document.getElementById('docFile').files[0]);
+      formData.append('remark', document.getElementById('docRemark').value.trim());
+
+      try {
+        const res = await fetch('/api/admin/documents', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token },
+          body: formData
+        });
+        const result = await res.json();
+        if (res.ok) {
+          msg.style.color = '#15803D';
+          msg.textContent = 'Document uploaded successfully! Assigned UUID: ' + result.uuid;
+          document.getElementById('docForm').reset();
+          generateUUID('uuid');
+          setTimeout(() => {
+            window.location.href = '/dashboard#documents';
+          }, 1500);
+        } else {
+          msg.style.color = '#DC2626';
+          msg.textContent = result.error || 'Failed to upload document';
+        }
+      } catch (err) {
+        msg.style.color = '#DC2626';
+        msg.textContent = 'Network communication error';
+      }
+    }
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login'; }
+  </script>
+</body>
+</html>

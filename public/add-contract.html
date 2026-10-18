@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Contract — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="#" onclick="logout()" class="nav-link">Log Out</a>
+    </div>
+  </nav>
+
+  <section class="section" style="min-height: 90vh;">
+    <div class="section-inner" style="max-width: 980px;">
+      <div style="margin-bottom: 32px;">
+        <span class="label-badge" style="margin-bottom: 12px;">Contract Ledger</span>
+        <h2 style="margin-top: 8px;">Create Master Contract</h2>
+        <p class="muted">Fill in the commercial terms below. All contract oversight, bank guarantees, and deliverables are tracked in the operational dashboard.</p>
+      </div>
+
+      <form id="contractForm" onsubmit="createContract(event)" style="display: grid; gap: 24px;">
+        <!-- Hidden UUID input (UUID is displayed in the browser URL) -->
+        <input type="hidden" id="uuid" name="uuid">
+
+        <!-- Contract Details -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">01. Contract Identification</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="contractNo">Contract No. (Manual Entry)</label>
+              <input type="text" id="contractNo" name="contractNo" placeholder="e.g. CNT-2026-SECI-001" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="poNo">PO Number</label>
+              <input type="text" id="poNo" name="poNo" placeholder="e.g. PO-89211-REV2" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="contractName">Contract Name</label>
+              <input type="text" id="contractName" name="contractName" placeholder="e.g. Comprehensive Annual O&M Contract" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="contractType">Contract Classification</label>
+              <input type="text" id="contractType" name="contractType" placeholder="e.g. EPC / Balance of Plant / O&M" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Site & Performance -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">02. Site Oversight & Guarantees</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="siteInCharge">Site-In-Charge Officer</label>
+              <input type="text" id="siteInCharge" name="siteInCharge" placeholder="e.g. Rajesh Kumar Sharma">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="bgValue">Bank Guarantee (BG) Value (Cr)</label>
+              <input type="number" step="0.01" id="bgValue" name="bgValue" placeholder="e.g. 15.50">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="validity">BG Validity Window</label>
+              <input type="text" id="validity" name="validity" placeholder="e.g. 36 Months + 90 Days Claim">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="performanceMetric">SLA Performance Target</label>
+              <input type="text" id="performanceMetric" name="performanceMetric" placeholder="e.g. Min. 99.2% Availability">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates & Financial Schedule -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">03. Schedule & Commercial Terms</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="effectiveDate">Effective Start Date</label>
+              <input type="date" id="effectiveDate" name="effectiveDate" placeholder="Select start date">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="endDate">Contract Expiration Date</label>
+              <input type="date" id="endDate" name="endDate" placeholder="Select end date">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="invoicingFrequency">Invoicing Cycle</label>
+              <input type="text" id="invoicingFrequency" name="invoicingFrequency" placeholder="e.g. Monthly against verified meter logs">
+            </div>
+            <div class="form-group" style="margin-bottom: 0; grid-column: 1 / -1;">
+              <label for="contractValueYearWise">Year-Wise Commercial Value Schedule</label>
+              <textarea id="contractValueYearWise" name="contractValueYearWise" placeholder="e.g. Year 1: ₹5.20 Cr | Year 2: ₹5.45 Cr | Year 3: ₹5.75 Cr" style="min-height: 80px;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scope -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">04. Scope of Work</p>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="scopeSummary">Scope Summary & Key Deliverables</label>
+            <textarea id="scopeSummary" name="scopeSummary" placeholder="Provide detailed operational scope, robotic cleaning schedules, inverter upkeep, and emergency breakdown response protocols..." style="min-height: 110px;"></textarea>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; justify-content: flex-end; padding-top: 12px;">
+          <a href="/dashboard#contracts" class="btn-secondary">Back to Dashboard</a>
+          <button type="submit" class="btn-primary">Submit Contract ↗</button>
+        </div>
+      </form>
+      <p id="contractMsg" style="margin-top: 24px; font-size: 14px; text-align: center;"></p>
+    </div>
+  </section>
+
+  <script>
+    function getOrGenerateUUID() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let uuid = urlParams.get('uuid');
+      if (!uuid) {
+        uuid = crypto.randomUUID();
+        urlParams.set('uuid', uuid);
+        const newUrl = window.location.pathname + '?' + urlParams.toString();
+        window.history.replaceState(null, '', newUrl);
+      }
+      const uuidEl = document.getElementById('uuid');
+      if (uuidEl) uuidEl.value = uuid;
+      return uuid;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      getOrGenerateUUID();
+      const form = document.getElementById('contractForm');
+      if (form) {
+        form.addEventListener('submit', createContract);
+      }
+    });
+
+    async function createContract(e) {
+      e.preventDefault();
+      const msg = document.getElementById('contractMsg');
+      msg.textContent = '';
+      const token = localStorage.getItem('token');
+      const data = {
+        uuid: document.getElementById('uuid').value.trim() || undefined,
+        contractNo: document.getElementById('contractNo').value.trim(),
+        poNo: document.getElementById('poNo').value.trim(),
+        contractName: document.getElementById('contractName').value.trim(),
+        contractType: document.getElementById('contractType').value.trim(),
+        siteInCharge: document.getElementById('siteInCharge').value.trim(),
+        bgValue: parseFloat(document.getElementById('bgValue').value) || null,
+        validity: document.getElementById('validity').value.trim(),
+        performanceMetric: document.getElementById('performanceMetric').value.trim(),
+        effectiveDate: document.getElementById('effectiveDate').value,
+        endDate: document.getElementById('endDate').value,
+        contractValueYearWise: document.getElementById('contractValueYearWise').value.trim(),
+        invoicingFrequency: document.getElementById('invoicingFrequency').value.trim(),
+        scopeSummary: document.getElementById('scopeSummary').value.trim()
+      };
+      try {
+        const res = await fetch('/api/admin/contracts', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          msg.style.color = '#15803D';
+          msg.textContent = 'Contract created successfully! Contract No: ' + (result.contractNo || '');
+          document.getElementById('contractForm').reset();
+          const nextUuid = crypto.randomUUID();
+          const nextParams = new URLSearchParams();
+          nextParams.set('uuid', nextUuid);
+          window.history.replaceState(null, '', window.location.pathname + '?' + nextParams.toString());
+          document.getElementById('uuid').value = nextUuid;
+          setTimeout(() => {
+            window.location.href = '/dashboard#contracts';
+          }, 1500);
+        } else {
+          msg.style.color = '#DC2626';
+          msg.textContent = result.error || 'Failed to create contract';
+        }
+      } catch (err) {
+        msg.style.color = '#DC2626';
+        msg.textContent = 'Network communication error';
+      }
+    }
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login'; }
+  </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Project — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="#" onclick="logout()" class="nav-link">Log Out</a>
+    </div>
+  </nav>
+
+  <section class="section" style="min-height: 90vh;">
+    <div class="section-inner" style="max-width: 980px;">
+      <div style="margin-bottom: 32px;">
+        <span class="label-badge" style="margin-bottom: 12px;">Infrastructure Registry</span>
+        <h2 style="margin-top: 8px;">Add New Project</h2>
+        <p class="muted">Fill in the project specifications below. All engineering, capacity, and commercial terms will be tracked in the operational dashboard.</p>
+      </div>
+
+      <form id="projectForm" onsubmit="createProject(event)" style="display: grid; gap: 24px;">
+        <!-- Hidden UUID input (UUID is displayed in the browser URL) -->
+        <input type="hidden" id="uuid" name="uuid">
+
+        <!-- Project Details -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">01. Project Details</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="tenderNo">Tender No. (Manual Entry)</label>
+              <input type="text" id="tenderNo" name="tenderNo" placeholder="e.g. SECI/C&P/IPP/11/2026/001" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="stationName">Station Name</label>
+              <input type="text" id="stationName" name="stationName" placeholder="e.g. Bhadla Solar Station Phase IV" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="location">Station Location</label>
+              <input type="text" id="location" name="location" placeholder="e.g. Jodhpur, Rajasthan" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Capacity & Technical -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">02. Capacity & Technical</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="solarCapacityMW">Solar Capacity (MW)</label>
+              <input type="number" step="0.01" id="solarCapacityMW" name="solarCapacityMW" placeholder="e.g. 250.00">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="bessCapacityMW">BESS Capacity (MW)</label>
+              <input type="number" step="0.01" id="bessCapacityMW" name="bessCapacityMW" placeholder="e.g. 50.00">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="bessCapacityMWh">BESS Capacity (MWh)</label>
+              <input type="number" step="0.01" id="bessCapacityMWh" name="bessCapacityMWh" placeholder="e.g. 100.00">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="projectType">Project Type</label>
+              <input type="text" id="projectType" name="projectType" placeholder="e.g. Solar PV + BESS">
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance & Metrics -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">03. Performance & Metrics</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="commissioningDate">Commissioning Date</label>
+              <input type="date" id="commissioningDate" name="commissioningDate" placeholder="Select commissioning date">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="performanceMetric">Performance Metric</label>
+              <input type="text" id="performanceMetric" name="performanceMetric" placeholder="e.g. CUF > 24%">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="guaranteedParameter">Guaranteed Parameter</label>
+              <input type="text" id="guaranteedParameter" name="guaranteedParameter" placeholder="e.g. 98.5% Plant Availability">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="ppaTariff">PPA Tariff (Rs/kWh)</label>
+              <input type="number" step="0.0001" id="ppaTariff" name="ppaTariff" placeholder="e.g. 2.44">
+            </div>
+          </div>
+        </div>
+
+        <!-- Commercial & Off-take -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">04. Commercial & Off-take</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="guaranteedMUs">Guaranteed Annual (MUs)</label>
+              <input type="number" step="0.01" id="guaranteedMUs" name="guaranteedMUs" placeholder="e.g. 520.50">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="offTaker">Off-Taker Entity</label>
+              <input type="text" id="offTaker" name="offTaker" placeholder="e.g. SECI / State Utility">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="ppaTenure">PPA Tenure (Years)</label>
+              <input type="number" id="ppaTenure" name="ppaTenure" placeholder="e.g. 25">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="mustRun">Regulatory Status</label>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border: 1px solid var(--border-strong); background: #FFFFFF; border-radius: var(--radius-sm); height: 48px;">
+                <input type="checkbox" id="mustRun" name="mustRun" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;">
+                <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Must-Run Priority Status</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial & Grid Connection -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">05. Financial & Connectivity</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="projectCost">Total Project Cost (Cr)</label>
+              <input type="number" step="0.01" id="projectCost" name="projectCost" placeholder="e.g. 1150.00">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="oaDate">Operational Acceptance  Date</label>
+              <input type="date" id="oaDate" name="oaDate" placeholder="Select OA date">
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="card">
+          <p class="label" style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">06. Supplementary Specs</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="dsmApplications">DSM Applications</label>
+              <textarea id="dsmApplications" name="dsmApplications" placeholder="Describe DSM compliance, peak shaving, and frequency response..." style="min-height: 90px;"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="degradationFactor">Annual Degradation Factor (%)</label>
+              <input type="number" step="0.01" id="degradationFactor" name="degradationFactor" placeholder="e.g. 0.50">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 0;">
+              <label for="projectContractor">EPC Project Contractor</label>
+              <input type="text" id="projectContractor" name="projectContractor" placeholder="e.g. Sterling and Wilson Renewable Energy Ltd">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; justify-content: flex-end; padding-top: 12px;">
+          <a href="/dashboard#projects" class="btn-secondary">Back to Dashboard</a>
+          <button type="submit" class="btn-primary">Submit Project ↗</button>
+        </div>
+      </form>
+      <p id="projectMsg" style="margin-top: 24px; font-size: 14px; text-align: center;"></p>
+    </div>
+  </section>
+
+  <script>
+    function getOrGenerateUUID() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let uuid = urlParams.get('uuid');
+      if (!uuid) {
+        uuid = crypto.randomUUID();
+        urlParams.set('uuid', uuid);
+        const newUrl = window.location.pathname + '?' + urlParams.toString();
+        window.history.replaceState(null, '', newUrl);
+      }
+      const uuidEl = document.getElementById('uuid');
+      if (uuidEl) uuidEl.value = uuid;
+      return uuid;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      getOrGenerateUUID();
+      const form = document.getElementById('projectForm');
+      if (form) {
+        form.addEventListener('submit', createProject);
+      }
+    });
+
+    async function createProject(e) {
+      e.preventDefault();
+      const msg = document.getElementById('projectMsg');
+      msg.textContent = '';
+      const token = localStorage.getItem('token');
+      const data = {
+        uuid: document.getElementById('uuid').value.trim() || undefined,
+        tenderNo: document.getElementById('tenderNo').value.trim(),
+        stationName: document.getElementById('stationName').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        solarCapacityMW: parseFloat(document.getElementById('solarCapacityMW').value) || null,
+        bessCapacityMW: parseFloat(document.getElementById('bessCapacityMW').value) || null,
+        bessCapacityMWh: parseFloat(document.getElementById('bessCapacityMWh').value) || null,
+        projectType: document.getElementById('projectType').value.trim(),
+        commissioningDate: document.getElementById('commissioningDate').value,
+        performanceMetric: document.getElementById('performanceMetric').value.trim(),
+        guaranteedParameter: document.getElementById('guaranteedParameter').value.trim(),
+        ppaTariff: parseFloat(document.getElementById('ppaTariff').value) || null,
+        guaranteedMUs: parseFloat(document.getElementById('guaranteedMUs').value) || null,
+        offTaker: document.getElementById('offTaker').value.trim(),
+        ppaTenure: parseInt(document.getElementById('ppaTenure').value) || null,
+        mustRun: document.getElementById('mustRun').checked,
+        projectCost: parseFloat(document.getElementById('projectCost').value) || null,
+        oaDate: document.getElementById('oaDate').value,
+        dsmApplications: document.getElementById('dsmApplications').value.trim(),
+        degradationFactor: parseFloat(document.getElementById('degradationFactor').value) || null,
+        projectContractor: document.getElementById('projectContractor').value.trim()
+      };
+      try {
+        const res = await fetch('/api/admin/projects', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          msg.style.color = '#15803D';
+          msg.textContent = 'Project provisioned successfully! Tender No: ' + result.tenderNo;
+          document.getElementById('projectForm').reset();
+          const nextUuid = crypto.randomUUID();
+          const nextParams = new URLSearchParams();
+          nextParams.set('uuid', nextUuid);
+          window.history.replaceState(null, '', window.location.pathname + '?' + nextParams.toString());
+          document.getElementById('uuid').value = nextUuid;
+          setTimeout(() => {
+            window.location.href = '/dashboard#projects';
+          }, 1500);
+        } else {
+          msg.style.color = '#DC2626';
+          msg.textContent = result.error || 'Failed to create project';
+        }
+      } catch (err) {
+        msg.style.color = '#DC2626';
+        msg.textContent = 'Network communication error';
+      }
+    }
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login'; }
+  </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/signup" class="nav-link active">Sign Up</a>
+      <a href="/login" class="nav-link">Login</a>
+    </div>
+  </nav>
+
+  <section class="section" style="min-height: 85vh; display: flex; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 480px; width: 100%; padding: 40px;">
+      <div style="margin-bottom: 28px;">
+        <span class="label-badge" style="margin-bottom: 12px;">Get Started</span>
+        <h2 style="margin-top: 10px; margin-bottom: 8px;">Create Account</h2>
+        <p class="muted">Register your details. Your role will be verified and assigned by an administrator.</p>
+      </div>
+
+      <form id="signupForm" autocomplete="off">
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label for="uuid" style="margin-bottom: 0;">User UUID</label>
+            <button type="button" onclick="generateUUID('uuid')" style="background: none; border: none; color: var(--primary); font-size: 12px; font-weight: 600; cursor: pointer;">↻ New UUID</button>
+          </div>
+          <input type="text" id="uuid" name="uuid" placeholder="e.g. 3f28c3e1-6d6a-4b0a-9ce6-1c204c81f5d3" style="font-family: monospace;" required>
+        </div>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="e.g. Sarah Jenkins" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Work Email</label>
+          <input type="email" id="email" name="email" placeholder="e.g. sarah@company.com" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Min. 8 characters" autocomplete="new-password" required>
+        </div>
+        <div class="form-group">
+          <label for="role">Requested Access Role</label>
+          <select id="role" name="role">
+            <option value="vendor">Vendor</option>
+            <option value="reviewer">Reviewer</option>
+            <option value="approver">Approver</option>
+            <option value="hod">HOD</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">Create Account ↗</button>
+      </form>
+      <p id="msg" style="margin-top: 16px; font-size: 14px; text-align: center;"></p>
+
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
+        <p class="muted" style="font-size: 14px;">Already have an account? <a href="/login" style="color: var(--primary); font-weight: 600;">Log in here →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function generateUUID(id) {
+      document.getElementById(id).value = crypto.randomUUID();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!document.getElementById('uuid').value) {
+        generateUUID('uuid');
+      }
+    });
+
+    if (window.location.search) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const msg = document.getElementById('msg');
+      msg.style.color = 'var(--text-secondary)';
+      msg.textContent = 'Registering account...';
+
+      const data = {
+        uuid: document.getElementById('uuid').value.trim() || undefined,
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        role: document.getElementById('role').value
+      };
+
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          msg.style.color = '#15803D';
+          msg.textContent = 'Account created successfully! Redirecting to login...';
+          document.getElementById('signupForm').reset();
+          generateUUID('uuid');
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1200);
+        } else {
+          msg.style.color = '#DC2626';
+          msg.textContent = result.error || 'Failed to create account';
+        }
+      } catch (err) {
+        msg.style.color = '#DC2626';
+        msg.textContent = 'Network communication error. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>

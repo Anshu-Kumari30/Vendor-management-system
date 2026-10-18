@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="#" onclick="logout()" class="nav-link">Log Out</a>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="section-inner">
+      <div style="margin-bottom: 32px;">
+        <span class="label-badge" style="margin-bottom: 12px;">Security & Provisioning</span>
+        <h2 style="margin-top: 8px;">User Access & Role Management</h2>
+        <p class="muted">Provision user credentials with unique UUIDs, modify active status, and assign departmental role permissions.</p>
+      </div>
+
+      <!-- Create User Card -->
+      <div class="card" style="margin-bottom: 40px;">
+        <div style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+          <p class="label">Provision New User</p>
+        </div>
+        <form id="createUserForm" onsubmit="createUser(event)">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label for="uuid" style="margin-bottom: 0;">User UUID</label>
+                <button type="button" onclick="generateUUID('uuid')" style="background: none; border: none; color: var(--primary); font-size: 12px; font-weight: 600; cursor: pointer;">↻ New UUID</button>
+              </div>
+              <input type="text" id="uuid" name="uuid" placeholder="e.g. 3f28c3e1-6d6a-4b0a-9ce6-1c204c81f5d3" style="font-family: monospace;" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="username">Username</label>
+              <input type="text" id="username" name="username" placeholder="e.g. dev_lead" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="email">Work Email</label>
+              <input type="email" id="email" name="email" placeholder="e.g. lead@enterprise.com" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="Enter secure password" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="passwordConfirm">Confirm Password</label>
+              <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Re-enter password" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="userRole">Assigned Access Role</label>
+              <select id="userRole" name="role">
+                <option value="vendor">Vendor</option>
+                <option value="reviewer">Checker / Reviewer</option>
+                <option value="approver">Approver</option>
+                <option value="hod">HOD</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: flex-end; grid-column: 1 / -1;">
+              <button type="submit" class="btn-primary" style="height: 48px; min-width: 200px;">Create User ↗</button>
+            </div>
+          </div>
+        </form>
+        <p id="userMsg" style="margin-top: 16px; font-size: 14px;"></p>
+      </div>
+
+      <!-- Users Table Card -->
+      <div class="card">
+        <div class="tab-header">
+          <div>
+            <h3>System Accounts</h3>
+            <p class="muted" style="font-size: 14px;">Real-time list of all authenticated accounts and role selectors.</p>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="usersTable">
+            <thead>
+              <tr><th>UUID</th><th>Username</th><th>Work Email</th><th>Assigned Role</th><th>Status</th><th>Access Control</th></tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 32px;">Loading accounts...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function generateUUID(id) {
+      document.getElementById(id).value = crypto.randomUUID();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!document.getElementById('uuid').value) {
+        generateUUID('uuid');
+      }
+    });
+
+    async function createUser(e) {
+      e.preventDefault();
+      const msg = document.getElementById('userMsg');
+      msg.textContent = '';
+      const pw = document.getElementById('password').value;
+      const pwConfirm = document.getElementById('passwordConfirm').value;
+      if (pw !== pwConfirm) {
+        msg.style.color = '#DC2626';
+        msg.textContent = 'Passwords do not match';
+        return;
+      }
+      const data = {
+        uuid: document.getElementById('uuid').value.trim() || undefined,
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: pw,
+        role: document.getElementById('userRole').value
+      };
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/admin/users', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          msg.style.color = '#15803D';
+          msg.textContent = 'User provisioned successfully! UUID: ' + result.user.uuid;
+          document.getElementById('createUserForm').reset();
+          generateUUID('uuid');
+          loadAdmin();
+        } else {
+          msg.style.color = '#DC2626';
+          msg.textContent = result.error || 'Failed to create user';
+        }
+      } catch (err) {
+        msg.style.color = '#DC2626';
+        msg.textContent = 'Network communication error';
+      }
+    }
+
+    async function loadAdmin() {
+      const token = localStorage.getItem('token');
+      if (!token) { window.location.href = '/login'; return; }
+      try {
+        const res = await fetch('/api/admin/users', { headers: { Authorization: 'Bearer ' + token } });
+        const users = await res.json();
+        if (!res.ok) throw new Error(users.error || 'Access denied');
+        const tbody = document.getElementById('usersBody');
+        tbody.innerHTML = '';
+        users.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-family: monospace; font-size: 12px; color: var(--primary);">${u.uuid || '-'}</td>
+            <td style="font-weight: 600; color: var(--text-main);">${u.name || u.username || '-'}</td>
+            <td style="color: var(--text-secondary);">${u.email}</td>
+            <td><span style="display: inline-block; padding: 4px 10px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; background: var(--primary-light); color: var(--primary); text-transform: uppercase;">${u.role}</span></td>
+            <td><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: ${u.isActive ? '#15803D' : '#DC2626'};"><span style="width: 7px; height: 7px; border-radius: 50%; background: ${u.isActive ? '#15803D' : '#DC2626'};"></span>${u.isActive ? 'Active' : 'Inactive'}</span></td>
+            <td>
+              <select onchange="updateRole(${u.id}, this.value)" style="padding: 7px 12px; font-size: 13px; border: 1px solid var(--border-strong); background: #FFFFFF; color: var(--text-main); border-radius: var(--radius-sm); outline: none;">
+                <option value="vendor" ${u.role==='vendor'?'selected':''}>Vendor</option>
+                <option value="reviewer" ${u.role==='reviewer'?'selected':''}>Checker</option>
+                <option value="approver" ${u.role==='approver'?'selected':''}>Approver</option>
+                <option value="hod" ${u.role==='hod'?'selected':''}>HOD</option>
+                <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+              </select>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        document.getElementById('usersBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 32px;">Access denied or error fetching user list.</td></tr>';
+      }
+    }
+
+    async function updateRole(id, role) {
+      const token = localStorage.getItem('token');
+      await fetch('/api/admin/users/' + id + '/role', {
+        method: 'PUT',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role })
+      });
+      loadAdmin();
+    }
+
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login'; }
+    loadAdmin();
+  </script>
+</body>
+</html>

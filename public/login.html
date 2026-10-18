@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Vendor System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">VENDOR SYSTEM</a>
+    <div class="nav-links">
+      <a href="/signup" class="nav-link">Sign Up</a>
+      <a href="/login" class="nav-link active">Login</a>
+    </div>
+  </nav>
+
+  <section class="section" style="min-height: 82vh; display: flex; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 440px; width: 100%; padding: 40px;">
+      <div style="margin-bottom: 28px;">
+        <span class="label-badge" style="margin-bottom: 12px;">Welcome Back</span>
+        <h2 style="margin-top: 10px; margin-bottom: 8px;">Log in</h2>
+        <p class="muted">Access your role-based workspace and records.</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Work Email</label>
+          <input type="email" id="email" name="email" placeholder="e.g. user@company.com" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">Log In ↗</button>
+      </form>
+      <p id="msg" style="margin-top: 16px; font-size: 14px; text-align: center;"></p>
+
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
+        <p class="muted" style="font-size: 14px;">Don't have an account? <a href="/signup" style="color: var(--primary); font-weight: 600;">Sign up here →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    if (window.location.search) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const msg = document.getElementById('msg');
+      msg.style.color = 'var(--text-secondary)';
+      msg.textContent = 'Verifying credentials...';
+
+      const data = {
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value
+      };
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok && result.token) {
+          localStorage.setItem('token', result.token);
+          msg.style.color = '#15803D';
+          msg.textContent = 'Login successful. Redirecting to dashboard...';
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 500);
+        } else {
+          msg.style.color = '#DC2626';
+          msg.textContent = (result.error || 'Login failed') + '. Ensure this account has been created via Sign Up first.';
+        }
+      } catch (err) {
+        msg.style.color = '#DC2626';
+        msg.textContent = 'Network communication error. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>
